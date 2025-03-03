@@ -1,0 +1,21 @@
+Users =>
+id
+username
+password
+role 
+
+Disases =>
+id
+name
+description
+level
+symptompId
+userId
+createdAt
+updatedAt
+
+symptoms =>
+id
+name
+createdAt
+updatedAt
