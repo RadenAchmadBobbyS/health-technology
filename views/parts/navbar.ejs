@@ -1,0 +1,59 @@
+<div class="navbar bg-secondary text-secondary-content shadow-sm">
+  <div class="flex-1">
+    <a href="/" class="btn btn-ghost text-xl">Health</a>
+  </div>
+
+  <% if (Object.keys(userLogin).length > 0) { %>
+  <div class="flex-none mx-2">
+    <ul class="menu menu-horizontal px-1 font-bold">
+      <li>Hello, <%= userLogin.user %></li>
+    </ul>
+  </div>
+  <div class="flex gap-2">
+    <!-- <input
+        type="text"
+        placeholder="Search"
+        class="input input-bordered w-24 md:w-auto"
+      /> -->
+    <div class="dropdown dropdown-end">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+        <div class="w-10 rounded-full">
+          <img
+            alt="Tailwind CSS Navbar component"
+            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+          />
+        </div>
+      </div>
+      <ul
+        tabindex="0"
+        class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+      >
+        <!-- <li>
+            <a class="justify-between">
+              Profile
+              <span class="badge">New</span>
+            </a>
+          </li> -->
+        <li><a>Diagnostics</a></li>
+        <li><a>Logout</a></li>
+      </ul>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="flex-none">
+    <ul class="menu menu-horizontal px-1">
+      <li><a href="/login">Login</a></li>
+      <li><a href="/register">Register</a></li>
+      <!-- <li>
+        <details>
+          <summary>Parent</summary>
+          <ul class="bg-base-100 rounded-t-none p-2">
+            <li><a>Link 1</a></li>
+            <li><a>Link 2</a></li>
+          </ul>
+        </details>
+      </li> -->
+    </ul>
+  </div>
+  <% } %>
+</div>
