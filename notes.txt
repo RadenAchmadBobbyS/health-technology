@@ -19,3 +19,12 @@ id
 name
 createdAt
 updatedAt
+
+URUTAN MIGRATE 
+npx sequelize db:migrate --name 20250304104901-create-user
+npx sequelize db:migrate --name 20250304150055-create-disease
+npx sequelize db:migrate --name 20250304150158-create-symptom
+npx sequelize db:migrate
+
+URUTAN SEEDING KALO seed:all GABISA
+npx sequelize db:seed
