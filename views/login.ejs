@@ -8,5 +8,78 @@
   </head>
   <body>
     <%- include('parts/navbar', {userLogin: userLogin}) %>
+    <div class="p-8 w-full max-h-screen">
+      <form
+        action="/login"
+        method="post"
+        class="flex flex-col justify-start items-center w-full"
+      >
+        <h1 class="text-2xl font-bold my-4">Login</h1>
+
+        <fieldset class="fieldset h-20">
+          <label class="input min-w-xs">
+            <svg
+              class="h-[1em] opacity-50"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <g
+                stroke-linejoin="round"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </g>
+            </svg>
+            <input type="input" placeholder="Username" name="username" />
+          </label>
+          <% if (errors && errors.username) { %>
+          <p
+            class="fieldset-label text-red-600 flex justify-center items-center"
+          >
+            <%= errors.username %>
+          </p>
+          <% } %>
+        </fieldset>
+
+        <fieldset class="fieldset h-20">
+          <label class="input min-w-xs">
+            <svg
+              class="h-[1em] opacity-50"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <g
+                stroke-linejoin="round"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"
+                ></path>
+                <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
+              </g>
+            </svg>
+            <input type="password" placeholder="Password" name="password" />
+          </label>
+          <% if (errors && errors.password) { %>
+          <p
+            class="fieldset-label text-red-600 flex justify-center items-center"
+          >
+            <%= errors.password %>
+          </p>
+          <% } %>
+        </fieldset>
+
+        <button type="submit" class="btn btn-primary text-primary-content mt-2">
+          Login
+        </button>
+      </form>
+    </div>
   </body>
 </html>
