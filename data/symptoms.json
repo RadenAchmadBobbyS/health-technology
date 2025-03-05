@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "Fever" },
+  { "id": 2, "name": "Cough" },
+  { "id": 3, "name": "Fatigue" },
+  { "id": 4, "name": "Increased Thirst" },
+  { "id": 5, "name": "High Blood Pressure" }
+]

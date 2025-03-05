@@ -1,0 +1,7 @@
+[
+  { "id": 1, "DiseaseId": 1, "SymptomId": 1 },
+  { "id": 2, "DiseaseId": 1, "SymptomId": 2 },
+  { "id": 3, "DiseaseId": 1, "SymptomId": 3 },
+  { "id": 4, "DiseaseId": 2, "SymptomId": 4 },
+  { "id": 5, "DiseaseId": 3, "SymptomId": 5 }
+]
