@@ -7,6 +7,16 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
+    static convertDate(date) {
+      const options = {
+        weekday: "long",
+        day: "numeric",
+        month: "long", 
+        year: "numeric"
+      };
+      return date.toLocaleString('id-ID', options);
+    }
+
     static associate(models) {
       // define association here
       UserProfile.belongsTo(models.User, { foreignKey: "UserId" });
@@ -29,7 +39,12 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "UserProfile",
       hooks: {
-        beforeUpdate: (profile) => {}
+        beforeUpdate: (profile) => {
+          if(profile.gender.length === 0 || !profile.gender) 
+            profile.gender = null;
+          if(isNaN(profile.dateOfBirth.getTime())) 
+            profile.dateOfBirth = null;
+        }
       }
     }
   );

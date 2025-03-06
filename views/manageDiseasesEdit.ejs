@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cupcake">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <%- include('parts/script') %>
+  </head>
+  <body>
+    <%- include('parts/navbar', {session: session}) %>
+    <div class="p-8 w-full max-h-screen">
+      <form
+        action="/manage/diseases/<%= disease.id %>/edit"
+        method="post"
+        class="flex flex-col justify-start items-center w-full"
+      >
+        <h1 class="text-2xl font-bold my-4">Edit Disease</h1>
+
+        <fieldset class="fieldset h-26">
+          <legend class="fieldset-legend">Name</legend>
+          <input
+            type="input"
+            placeholder="Disease Name"
+            name="name"
+            class="min-w-xs input"
+            value="<%= disease.name %>"
+          />
+          <!-- untuk error -->
+          <% if (errors.name) { %>
+          <p
+            class="fieldset-label text-red-600 flex justify-center items-center"
+          >
+            <%= errors.name %>
+          </p>
+          <% } %>
+        </fieldset>
+
+        <fieldset class="fieldset h-28">
+          <legend class="fieldset-legend">Description</legend>
+          <textarea name="description" class="textarea min-w-xs box rounded-[1rem]" placeholder="Description"><%= disease.description %></textarea>
+          <!-- untuk error -->
+          <!-- <p
+            class="fieldset-label text-red-600 flex justify-center items-center"
+          >
+            Meow
+          </p> -->
+        </fieldset>
+
+        <fieldset class="fieldset h-26 mt-4">
+          <legend class="fieldset-legend">Level</legend>
+          <div class="w-full min-w-xs">
+            <input type="range" min="1" max="5" value="<%= disease.level %>" name="level" class="range" step="1" />
+            <div class="flex justify-between px-2.5 mt-2 text-xs">
+              <span>|</span>
+              <span>|</span>
+              <span>|</span>
+              <span>|</span>
+              <span>|</span>
+            </div>
+            <div class="flex justify-between px-2.5 mt-2 text-xs">
+              <span>1</span>
+              <span>2</span>
+              <span>3</span>
+              <span>4</span>
+              <span>5</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="overflow-x-auto rounded-box mt-8">
+          <table class="table table-sm">
+            <!-- head -->
+            <thead>
+              <tr>
+                <th colspan="2" class="text-center">Symptoms</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% symptoms.forEach(element => { %>
+              <tr>
+                <th>
+                  <input id="<%= element.id %>" name="symptoms" type="checkbox" class="checkbox" value="<%= element.id  %>" <%= disease.Symptoms.find(symptom => symptom.id === element.id) ? `checked`: "" %>/>
+                </th>
+                <td>
+                  <label for="<%= element.id %>"><%= element.name %></label>
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <button type="submit" class="btn btn-primary text-primary-content mt-10">
+          Edit
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

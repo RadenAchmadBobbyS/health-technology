@@ -1,15 +1,11 @@
-const userLogin = {};
-const { Symptom } = require('../models')
-
-const bcrypt = require("bcrypt");
-
-const { User, UserProfile } = require("../models");
+const { User, UserProfile, Symptom, Disease, SymptomDiseaseJunction, Diagnostic } = require("../models");
 const bcrypt = require("bcrypt");
 
 class Controller {
   // ==================== HOME PAGE ====================
   static async showHomePage(req, res) {
     try {
+      // console.log(req.session)
       res.render("index", { session: req.session });
     } catch (error) {
       console.log(error);
@@ -43,14 +39,14 @@ class Controller {
 
       // console.log(req.body);
 
-      const newUser = await User.create(req.body);
+      await User.create(req.body);
       // console.log(newUser.id);
 
-      await UserProfile.create({
-        gender: null,
-        dateOfBirth: null,
-        UserId: newUser.id
-      });
+      // await UserProfile.create({
+      //   gender: null,
+      //   dateOfBirth: null,
+      //   UserId: newUser.id
+      // });
 
       res.redirect("/");
     } catch (error) {
@@ -156,8 +152,6 @@ class Controller {
   // ==================== USER PROFILE ====================
   static async showUserProfile(req, res) {
     try {
-      if (!req.session.userId) throw "Invalid user login";
-
       const profile = await UserProfile.findOne({
         where: {
           UserId: +req.session.userId
@@ -168,6 +162,9 @@ class Controller {
       */
       // console.log(profile);
 
+      if(profile.dataValues.dateOfBirth !== null)
+        profile.dataValues.dateOfBirth = UserProfile.convertDate(profile.dateOfBirth);
+
       res.render("userProfile", { session: req.session, profile: profile });
     } catch (error) {
       console.log(error);
@@ -177,8 +174,6 @@ class Controller {
 
   static async showEditProfile(req, res) {
     try {
-      if (!req.session.userId) throw "Invalid user login";
-
       const profile = await UserProfile.findOne({
         where: {
           UserId: +req.session.userId
@@ -192,32 +187,324 @@ class Controller {
     }
   }
 
+  static async postEditProfile(req, res) {
+    try {
+      // console.log(req.body)
+      req.body.gender = req.body.gender ? req.body.gender : null;
+
+      req.body.dateOfBirth = new Date(req.body.dateOfBirth)
+      if(isNaN(req.body.dateOfBirth.getTime())) 
+        req.body.dateOfBirth = null;
+
+      await UserProfile.update({
+        gender: req.body.gender,
+        dateOfBirth: req.body.dateOfBirth
+      }, 
+      { where: { UserId: req.session.userId }
+      }
+      );
+
+      res.redirect(`/profile/${req.session.userId}`);
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+
   // ==================== Diagnositc ====================
 
   static async showDiagnostic(req, res) {
     try {
-      let data = await Symptom.findAll()
-      res.render("addDiagnostic", { data })
+      let data = await Symptom.findAll();
+      res.render("addDiagnostic", { 
+        data: data, 
+        session: req.session
+      });
     } catch (error) {
-      res.send(error)
+      res.send(error);
     }
   }
 
   static async postDiagnostic(req, res) {
     try {
-      console.log(req.body)
-      await Symptom.create(req.body)
-      res.redirect("/diagnostic")
+      console.log(req.body);
+      await Symptom.create(req.body);
+      res.redirect("/diagnostic");
     } catch (error) {
-      res.send(error)
+      res.send(error);
     }
   }
 
   static async showDiagnosticDisease(req, res) {
     try {
-      
     } catch (error) {
-      res.send(error)
+      res.send(error);
+    }
+  }
+
+  // ================== LIST DIAGNOSTICS ==================
+  static async showDiagnosticsList(req, res) {
+    try {
+      let diagnosticsList;
+      if(req.params.userId)
+        diagnosticsList = await Diagnostic.findAll({
+          include: [User, Disease],
+          where: {
+            UserId: +req.params.userId
+          }
+        });
+      else 
+        diagnosticsList = await Diagnostic.findAll({
+          include: [User, Disease]
+        });
+      console.log(diagnosticsList);
+
+      res.render('diagnosticsList', {session: req.session});
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+
+  // ================== MANAGE DISEASES ==================
+  static async showManageDiseases(req, res) {
+    try {
+      const diseases = await Disease.findAll({
+        order: [["id", "ASC"]]
+      });
+      // console.log(diseases)
+
+      res.render("manageDiseases", {diseases: diseases, session: req.session})
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+
+  // ==================== MANAGE ADD DISEASE ====================
+  static async showManageDiseaseAdd(req, res) {
+    try {
+      const symptoms = await Symptom.findAll();
+      const errors = req.query.errors ? JSON.parse(req.query.errors) : {};
+      // console.log(symptoms);
+
+      res.render("manageDiseasesAdd", {
+        session: req.session, 
+        symptoms: symptoms,
+        errors: errors
+      });
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+
+  static async postManageDiseaseAdd(req, res) {
+    try {
+      // console.log(req.body);
+
+      req.body.symptoms = req.body.symptoms 
+        ? req.body.symptoms.map((element) => Number(element))
+        : [];
+      // console.log(req.body);
+
+      const symptoms = await Symptom.findAll({
+        where: {
+          id: req.body.symptoms
+        }
+      });
+      // console.log(symptoms);
+
+      const newDisease = await Disease.create({
+        name: req.body.name,
+        description: req.body.description,
+        level: req.body.level
+      });
+
+      await newDisease.addSymptoms(symptoms, {selfGranted: false});
+ 
+      res.redirect("/manage/diseases");
+    } catch (error) {
+      let errors = {};
+      error.errors.forEach((element) => {
+        errors[element.path] = element.message;
+      });
+      res.redirect(`/manage/diseases/add?errors=${JSON.stringify(errors)}`);
+    }
+  }
+
+  // ==================== MANAGE DETAIL DISEASE ====================
+  static async showManageDiseaseDetail (req, res) {
+    try {
+      const disease = await Disease.findOne({
+        where: {
+          id: req.params.diseaseId
+        },
+        include: Symptom
+      });
+
+      res.render("manageDiseasesById", {session: req.session, disease: disease});
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+
+  // ==================== MANAGE EDIT DISEASE ====================
+  static async showManageDiseaseEdit(req, res) {
+    try {
+      const errors = req.query.errors ? JSON.parse(req.query.errors) : {};
+
+      const symptoms = await Symptom.findAll();
+      // console.log(symptoms);
+      const disease = await Disease.findOne({
+        where: {
+          id: +req.params.diseaseId
+        },
+        include: Symptom
+      });
+
+      // console.log(symptoms, 'symptoms');
+      // console.log(disease, 'disease');
+      // console.log(disease.Symptoms, 'diseaseSymptoms');
+
+      res.render("manageDiseasesEdit", {
+        session: req.session, 
+        symptoms: symptoms, 
+        disease: disease,
+        errors: errors
+      });
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+
+  static async postManageDiseaseEdit(req, res) {
+    try {
+      req.body.symptoms = req.body.symptoms 
+        ? req.body.symptoms.map((element) => Number(element))
+        : [];
+      // console.log(req.body);
+
+      const disease = await Disease.findOne({
+        where: {
+          id: +req.params.diseaseId
+        }, 
+        include: Symptom
+      });
+
+      const symptoms = await Symptom.findAll({
+        where: {
+          id: req.body.symptoms
+        }
+      });
+      // console.log(symptoms);
+
+      await Disease.update({
+        name: req.body.name,
+        description: req.body.description,
+        level: req.body.level
+      }, {
+        where: {
+        id: +req.params.diseaseId
+        }
+      });
+
+      await disease.setSymptoms(symptoms, {selfGranted: false});
+  
+      res.redirect("/manage/diseases");
+    } catch (error) {
+      let errors = {};
+      error.errors.forEach((element) => {
+        errors[element.path] = element.message;
+      });
+      res.redirect(`/manage/diseases/${req.params.diseaseId}/edit?errors=${JSON.stringify(errors)}`);
+    }
+  }
+
+  // ==================== MANAGE DELETE DISEASE ====================
+  static async manageDiseaseDelete(req, res) {
+    try {
+      await SymptomDiseaseJunction.destroy({
+        where: {
+          DiseaseId: +req.params.diseaseId
+        }
+      });
+
+      await Disease.destroy({
+        where: {
+          id: +req.params.diseaseId
+        }
+      });
+
+      res.redirect("/manage/diseases");
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+
+  // ==================== MANAGE SYMPTOMS ====================
+  static async showManageSymptoms(req, res) {
+    try {
+      const symptoms = await Symptom.findAll();
+
+      res.render("manageSymptoms", {session: req.session, symptoms: symptoms});
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+
+  // ==================== MANAGE ADD SYMPTOMS ====================
+  static async showManageSymptomsAdd(req, res) {
+    try {
+      const errors = req.query.errors ? JSON.parse(req.query.errors) : {};
+
+      res.render("manageSymptomsAdd", {
+        session: req.session,
+        errors: errors
+      });
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+
+  static async postManageSymptomsAdd(req, res) {
+    try {
+      await Symptom.create(req.body);
+
+      res.redirect("/manage/symptoms");
+    } catch (error) {
+      let errors = {};
+      error.errors.forEach((element) => {
+        errors[element.path] = element.message;
+      });
+      res.redirect(`/manage/symptoms/add?errors=${JSON.stringify(errors)}`);
+    }
+  }
+
+  // ==================== MANAGE DELETE SYMPTOMS ====================
+  static async manageSymptomDelete(req, res) {
+    try {
+      await SymptomDiseaseJunction.destroy({
+        where: {
+          SymptomId: +req.params.symptomId
+        }
+      });
+
+      await Symptom.destroy({
+        where: {
+          id: +req.params.symptomId
+        }
+      });
+
+      res.redirect("/manage/symptoms");
+    } catch (error) {
+      console.log(error);
+      res.send(error);
     }
   }
 }

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cupcake">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <%- include('parts/script') %>
+  </head>
+  <body>
+    <%- include('parts/navbar', {session: session}) %>
+    <main class="flex flex-col justify-start items-center p-8">
+      <h1 class="text-3xl font-bold">Diseases</h1>
+      <div class="overflow-x-auto w-full">
+        <a href="/manage/diseases/add">
+          <button class="btn btn-accent">Add Disease</button>
+        </a>
+        <table class="table text-center mt-4">
+          <!-- head -->
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Level</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- row 1 -->
+            <% diseases.forEach(element => { %>
+            <tr>
+              <th><%= element.id %></th>
+              <td><%= element.name %></td>
+              <td><%= element.description %></td>
+              <td><%= element.level %></td>
+              <td>
+                <a href="/manage/diseases/<%= element.id %>">
+                  <button class="btn btn-soft btn-info">Details</button>
+                </a>
+                <a href="/manage/diseases/<%= element.id %>/edit">
+                  <button class="btn btn-soft btn-primary">Edit</button>
+                </a>
+                <a href="/manage/diseases/<%= element.id %>/delete">
+                  <button class="btn btn-soft btn-error">Delete</button>
+                </a>
+              </td>
+            </tr>
+            <% }) %>
+
+            <!-- CONTOH -->
+            <!-- <tr>
+              <th>2</th>
+              <td>Hart Hagerty</td>
+              <td>Desktop Support Technician</td>
+              <td>Purple</td>
+            </tr> -->
+           
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>

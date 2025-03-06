@@ -10,20 +10,22 @@
     <%- include('parts/navbar', {session: session}) %>
     <div class="p-8 w-full max-h-screen">
       <form
-        action="/profile/<%= profile.userId %>/edit"
+        action="/profile/<%= session.userId %>/edit"
         method="post"
         class="flex flex-col justify-start items-center w-full"
       >
-        <h1 class="text-2xl font-bold my-4">Edit</h1>
+        <h1 class="text-2xl font-bold my-4">Edit Profile</h1>
 
-        <fieldset class="fieldset h-20">
+        <fieldset class="fieldset h-20 min-w-xs flex">
           <legend class="fieldset-legend">Gender</legend>
-          <input
+          <!-- <input
             type="input"
             placeholder="Gender"
             name="gender"
             class="min-w-xs input"
-          />
+          /> -->
+          <input type="radio" name="gender" value="Male"  aria-label="Male" class="btn w-1/2" />
+          <input type="radio" name="gender" value="Female"  aria-label="Female" class="btn w-1/2" />
         </fieldset>
 
         <fieldset class="fieldset h-20">
