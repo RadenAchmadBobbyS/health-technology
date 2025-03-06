@@ -1,6 +1,6 @@
 const userLogin = {};
 
-const { User } = require("../models");
+const { User, UserProfile } = require("../models");
 const bcrypt = require("bcrypt");
 
 class Controller {
@@ -38,9 +38,16 @@ class Controller {
     try {
       req.body.role = req.body.role ? req.body.role : "user";
 
-      console.log(req.body);
+      // console.log(req.body);
 
-      await User.create(req.body);
+      const newUser = await User.create(req.body);
+      // console.log(newUser.id);
+
+      await UserProfile.create({
+        gender: null,
+        dateOfBirth: null,
+        UserId: newUser.id
+      });
 
       res.redirect("/");
     } catch (error) {
@@ -102,6 +109,8 @@ class Controller {
         // store user information in session, typically a user id
         req.session.userId = loginUser.id;
         req.session.username = loginUser.username;
+        req.session.email = loginUser.email;
+        req.session.role = loginUser.role;
 
         // save the session before redirection to ensure page
         // load does not happen before session is saved
@@ -135,6 +144,45 @@ class Controller {
           res.redirect("/");
         });
       });
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+
+  // ==================== USER PROFILE ====================
+  static async showUserProfile(req, res) {
+    try {
+      if (!req.session.userId) throw "Invalid user login";
+
+      const profile = await UserProfile.findOne({
+        where: {
+          UserId: +req.session.userId
+        }
+      });
+      /*
+        include: User
+      */
+      // console.log(profile);
+
+      res.render("userProfile", { session: req.session, profile: profile });
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+
+  static async showEditProfile(req, res) {
+    try {
+      if (!req.session.userId) throw "Invalid user login";
+
+      const profile = await UserProfile.findOne({
+        where: {
+          UserId: +req.session.userId
+        }
+      });
+
+      res.render("userProfileEdit", { session: req.session, profile: profile });
     } catch (error) {
       console.log(error);
       res.send(error);
