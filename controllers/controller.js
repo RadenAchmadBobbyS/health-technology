@@ -1,4 +1,7 @@
 const userLogin = {};
+const { Symptom } = require('../models')
+
+const bcrypt = require("bcrypt");
 
 const { User, UserProfile } = require("../models");
 const bcrypt = require("bcrypt");
@@ -186,6 +189,35 @@ class Controller {
     } catch (error) {
       console.log(error);
       res.send(error);
+    }
+  }
+
+  // ==================== Diagnositc ====================
+
+  static async showDiagnostic(req, res) {
+    try {
+      let data = await Symptom.findAll()
+      res.render("addDiagnostic", { data })
+    } catch (error) {
+      res.send(error)
+    }
+  }
+
+  static async postDiagnostic(req, res) {
+    try {
+      console.log(req.body)
+      await Symptom.create(req.body)
+      res.redirect("/diagnostic")
+    } catch (error) {
+      res.send(error)
+    }
+  }
+
+  static async showDiagnosticDisease(req, res) {
+    try {
+      
+    } catch (error) {
+      res.send(error)
     }
   }
 }

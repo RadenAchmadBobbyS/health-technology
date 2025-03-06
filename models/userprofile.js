@@ -16,14 +16,14 @@ module.exports = (sequelize, DataTypes) => {
   UserProfile.init(
     {
       gender: DataTypes.STRING,
-      dateOfBirth: DataTypes.DATE,
       UserId: {
         type: DataTypes.INTEGER,
         references: {
           model: "Users",
           key: "id"
         }
-      }
+      },
+      dateOfBirth: DataTypes.DATE
     },
     {
       sequelize,

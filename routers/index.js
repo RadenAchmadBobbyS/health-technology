@@ -25,8 +25,8 @@ router.post("/profile/:userId/edit");
 router.post("/profile/:userId/diagnostics");
 router.post("/profile/:userId/diagnostics/:diagnosticId");
 
-router.get("/diagnostic");
-// router.post("/diagnostic");
+router.get("/diagnostic", Controller.showDiagnostic);
+router.post("/diagnostic", Controller.postDiagnostic)
 router.get("/diagnostic/disease");
 router.post("/diagnostic/disease");
 
