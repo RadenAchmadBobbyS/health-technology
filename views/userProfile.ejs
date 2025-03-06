@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cupcake">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <%- include('parts/script') %>
+  </head>
+  <body>
+    <%- include('parts/navbar', {session: session}) %>
+    <div class="p-8 w-full max-h-screen flex justify-center items-center">
+      <div class="card bg-base-100 w-1/3 shadow-sm card-xl">
+        <div class="card-body">
+          <h2 class="card-title"><%= session.username %></h2>
+          <ul class="list bg-base-100">
+            <li class="list-row">
+              <h3 class="text-lg font-bold h-8 flex items-center w-30">
+                Email
+              </h3>
+              <div>
+                <!-- <div>Dio Lupa</div> -->
+                <div
+                  class="text-md h-8 font-semibold flex items-center opacity-80"
+                >
+                  <%= session.email %>
+                </div>
+              </div>
+            </li>
+
+            <li class="list-row">
+              <h3 class="text-lg font-bold h-8 flex items-center w-30">
+                Gender
+              </h3>
+              <div>
+                <!-- <div>Dio Lupa</div> -->
+                <div
+                  class="text-md h-8 font-semibold flex items-center opacity-80"
+                >
+                  <%= profile.gender ? profile.gender : `Gender has not been
+                  submitted` %>
+                </div>
+              </div>
+            </li>
+
+            <li class="list-row">
+              <h3 class="text-lg font-bold h-8 flex items-center w-30">
+                Date of Birth
+              </h3>
+              <div>
+                <!-- <div>Dio Lupa</div> -->
+                <div
+                  class="text-md h-8 font-semibold flex items-center opacity-80"
+                >
+                  <%= profile.dateOfBirth ? profile.dateOfBirth : `Date of birth
+                  has not been submitted` %>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div class="card-actions justify-end">
+            <a href="/profile/<%= session.userId %>/edit">
+              <button class="btn btn-primary">Edit Profile</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

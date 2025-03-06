@@ -17,9 +17,9 @@ router.post("/login", Controller.postLogin);
 
 router.get("/logout", Controller.logout);
 
-router.get("/profile/:userId");
+router.get("/profile/:userId", Controller.showUserProfile);
 
-router.get("/profile/:userId/edit");
+router.get("/profile/:userId/edit", Controller.showEditProfile);
 router.post("/profile/:userId/edit");
 
 router.post("/profile/:userId/diagnostics");
@@ -31,6 +31,7 @@ router.get("/diagnostic/disease");
 router.post("/diagnostic/disease");
 
 router.get("/manage/register", Controller.showRegister);
+
 router.get("/manage/diseases");
 
 router.get("/manage/diseases/add");
