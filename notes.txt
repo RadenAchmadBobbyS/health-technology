@@ -1,4 +1,5 @@
 
+
 npx sequelize-cli model:create --name User --attributes username:string,email:string,role:string,password:string
 npx sequelize-cli model:create --name Disease --attributes name:string,description:text,level:integer
 npx sequelize-cli model:create --name Symptom --attributes name:string
@@ -7,15 +8,12 @@ npx sequelize-cli model:create --name Diagnostic --attributes DiseaseId:integer,
 npx sequelize-cli model:create --name SymptomDiseaseJunction --attributes DiseaseId:integer,SymptomId:integer
 npx sequelize-cli migration:create --name "add dateOfBirth"
 
+URUTAN MIGRATE 
 
-## ========== MIGRATE =========== ##
-
-urutan migrate
 npx sequelize db:migrate --name 20250304104901-create-user
 npx sequelize db:migrate --name 20250304150055-create-disease
 npx sequelize db:migrate --name 20250304150158-create-symptom
 npx sequelize db:migrate
-
 
 ## ========== ROUTER =========== ##
 
@@ -59,3 +57,6 @@ POST "/manage/symptoms/:symptomId/edit" - Edit detail symptoms -> redirect ke "/
 GET "/manage/symptoms/:symptomId/delete" - Lihat dan edit detail symptoms -> redirect ke "/manage/symptoms"
 
 GET "/manage/diagnostics" - Lihat diagnostics user, "?search=" query untuk cari user
+=======
+URUTAN SEEDING KALO seed:all GABISA
+npx sequelize db:seed

@@ -3,6 +3,9 @@ const { Symptom } = require('../models')
 
 const bcrypt = require("bcrypt");
 
+const { User, UserProfile } = require("../models");
+const bcrypt = require("bcrypt");
+
 class Controller {
   // ==================== HOME PAGE ====================
   static async showHomePage(req, res) {
@@ -188,7 +191,6 @@ class Controller {
       res.send(error);
     }
   }
-  
 
   // ==================== Diagnositc ====================
 

@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       UserProfile.belongsTo(models.User, { foreignKey: "UserId" });
-      models.User.hasOne(UserProfile);
+      models.User.hasOne(UserProfile, { foreignKey: "UserId" });
     }
   }
   UserProfile.init(
@@ -27,7 +27,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "UserProfile"
+      modelName: "UserProfile",
+      hooks: {
+        beforeUpdate: (profile) => {}
+      }
     }
   );
   return UserProfile;
