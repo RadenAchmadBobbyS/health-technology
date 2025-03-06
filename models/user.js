@@ -59,14 +59,14 @@ module.exports = (sequelize, DataTypes) => {
         beforeCreate: async (user) => {
           const hash = await bcrypt.hash(user.password, 10);
           user.password = hash;
+        },
+        afterCreate: async (user) => {
+          await sequelize.models.UserProfile.create({
+            gender: null,
+            dateOfBirth: null,
+            UserId: user.id
+          });
         }
-        // afterCreate: async (user) => {
-        //   await sequelize.models.UserProfile.create({
-        //     gender: null,
-        //     dateOfBirth: null,
-        //     UserId: user.id
-        //   });
-        // }
       },
       modelName: "User"
     }

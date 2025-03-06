@@ -11,10 +11,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Symptom.belongsToMany(models.Disease, {
+        through: models.SymptomDiseaseJunction
+      });
+      models.Disease.belongsToMany(Symptom, {
+        through: models.SymptomDiseaseJunction
+      });
     }
   }
   Symptom.init({
-    name: DataTypes.STRING
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: { msg: "Symptom name must not be empty!" },
+        notEmpty: { msg: "Symptom name must not be empty!" }
+      }
+    }
   }, {
     sequelize,
     modelName: 'Symptom',

@@ -14,13 +14,21 @@
       <!-- <div class="hero-overlay"></div> -->
       <div class="hero-content text-primary-content text-center">
         <div class="max-w-md">
-          <h1 class="mb-5 text-5xl font-bold">Hello there</h1>
+          <h1 class="mb-5 text-5xl font-bold">Health Tracker</h1>
           <p class="mb-5">
-            Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-            excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
-            a id nisi.
+            Welcome to Health Tracker, your disease tracker. Quickly track your
+            symptoms and get information on potential diseases in minutes. To
+            get started, start by joining us as a user.
           </p>
-          <button class="btn btn-primary">Get Started</button>
+          <% if (session.userId) { %>
+          <a href="/diagnostic">
+            <button class="btn btn-primary">Diagnose</button>
+          </a>
+          <% } else { %>
+          <a href="/login">
+            <button class="btn btn-primary">Get Started</button>
+          </a>
+          <% } %>
         </div>
       </div>
     </div>

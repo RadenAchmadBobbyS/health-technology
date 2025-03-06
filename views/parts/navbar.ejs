@@ -6,7 +6,21 @@
   <% if (session.username) { %>
   <div class="flex-none mx-2">
     <ul class="menu menu-horizontal px-1 font-bold">
-      <li>Hello, <%= session.username %></li>
+      <li>
+        <p>Hello, <%= session.username %></p>
+      </li>
+      <% if (session.role === "admin") { %>
+      <li>
+        <details>
+          <summary>Manage</summary>
+          <ul class="bg-base-100 rounded-t-none p-2 z-100">
+            <li><a href="/manage/diseases">Diseases</a></li>
+            <li><a href="/manage/symptoms">Symptoms</a></li>
+            <li><a href="/manage/diagnostics">Diagnostics</a></li>
+          </ul>
+        </details>
+      </li>
+      <% } %>
     </ul>
   </div>
   <div class="flex gap-2">
@@ -15,6 +29,7 @@
         placeholder="Search"
         class="input input-bordered w-24 md:w-auto"
       /> -->
+      
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
         <div class="w-10 rounded-full bg-neutral text-neutral-content">

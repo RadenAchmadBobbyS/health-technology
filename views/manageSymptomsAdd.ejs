@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cupcake">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <%- include('parts/script') %>
+  </head>
+  <body>
+    <%- include('parts/navbar', {session: session}) %>
+    <div class="p-8 w-full max-h-screen">
+      <form
+        action="/manage/symptoms/add"
+        method="post"
+        class="flex flex-col justify-start items-center w-full"
+      >
+        <h1 class="text-2xl font-bold my-4">Add Symptom</h1>
+
+        <fieldset class="fieldset h-26">
+          <legend class="fieldset-legend">Name</legend>
+          <input
+            type="input"
+            placeholder="Symptom Name"
+            name="name"
+            class="min-w-xs input"
+          />
+          <!-- untuk error -->
+          <% if (errors.name) { %>
+          <p
+            class="fieldset-label text-red-600 flex justify-center items-center"
+          >
+            <%= errors.name %>
+          </p>
+          <% } %>
+        </fieldset>
+
+        <button type="submit" class="btn btn-primary text-primary-content mt-2">
+          Add
+        </button>
+      </form>
+    </div>
+  </body>
+</html>
