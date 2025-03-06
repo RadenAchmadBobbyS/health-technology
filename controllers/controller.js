@@ -243,28 +243,28 @@ class Controller {
   }
 
   // ================== LIST DIAGNOSTICS ==================
-  static async showDiagnosticsList(req, res) {
-    try {
-      let diagnosticsList;
-      if(req.params.userId)
-        diagnosticsList = await Diagnostic.findAll({
-          include: [User, Disease],
-          where: {
-            UserId: +req.params.userId
-          }
-        });
-      else 
-        diagnosticsList = await Diagnostic.findAll({
-          include: [User, Disease]
-        });
-      console.log(diagnosticsList);
+  // static async showDiagnosticsList(req, res) {
+  //   try {
+  //     let diagnosticsList;
+  //     if(req.params.userId)
+  //       diagnosticsList = await Diagnostic.findAll({
+  //         include: [User, Disease],
+  //         where: {
+  //           UserId: +req.params.userId
+  //         }
+  //       });
+  //     else 
+  //       diagnosticsList = await Diagnostic.findAll({
+  //         include: [User, Disease]
+  //       });
+  //     console.log(diagnosticsList);
 
-      res.render('diagnosticsList', {session: req.session});
-    } catch (error) {
-      console.log(error);
-      res.send(error);
-    }
-  }
+  //     res.render('diagnosticsList', {session: req.session});
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.send(error);
+  //   }
+  // }
 
   // ================== MANAGE DISEASES ==================
   static async showManageDiseases(req, res) {
