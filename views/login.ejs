@@ -7,7 +7,7 @@
     <%- include('parts/script') %>
   </head>
   <body>
-    <%- include('parts/navbar', {userLogin: userLogin}) %>
+    <%- include('parts/navbar', {session: session}) %>
     <div class="p-8 w-full max-h-screen">
       <form
         action="/login"

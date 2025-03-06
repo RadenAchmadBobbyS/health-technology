@@ -2,6 +2,11 @@ const express = require("express");
 const Controller = require("../controllers/controller");
 const router = express.Router();
 
+router.use(function (req, res, next) {
+  // console.log(req.session);
+  next();
+});
+
 router.get("/", Controller.showHomePage);
 
 router.get("/register", Controller.showRegister);
@@ -9,6 +14,8 @@ router.post("/register", Controller.postRegister);
 
 router.get("/login", Controller.showLogin);
 router.post("/login", Controller.postLogin);
+
+router.get("/logout", Controller.logout);
 
 router.get("/profile/:userId");
 

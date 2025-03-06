@@ -7,7 +7,7 @@ class Controller {
   // ==================== HOME PAGE ====================
   static async showHomePage(req, res) {
     try {
-      res.render("index", { userLogin: userLogin });
+      res.render("index", { session: req.session });
     } catch (error) {
       console.log(error);
       res.send(error);
@@ -18,11 +18,13 @@ class Controller {
   static async showRegister(req, res) {
     try {
       // console.log(req.path);
+      if (req.session.userId) res.redirect("/");
+
       const errors = req.query.errors ? JSON.parse(req.query.errors) : {};
 
       const admin = req.path === "/manage/register" ? true : false;
       res.render("register", {
-        userLogin: userLogin,
+        session: req.session,
         admin: admin,
         errors: errors
       });
@@ -53,9 +55,11 @@ class Controller {
   // ==================== LOGIN ====================
   static async showLogin(req, res) {
     try {
+      if (req.session.userId) res.redirect("/");
+
       const errors = req.query.errors ? JSON.parse(req.query.errors) : {};
 
-      res.render("login", { userLogin: userLogin, errors: errors });
+      res.render("login", { session: req.session, errors: errors });
     } catch (error) {
       console.log(error);
       res.send(error);
@@ -92,9 +96,48 @@ class Controller {
 
       if (Object.keys(validation).length > 0) throw validation;
 
-      res.redirect("/");
+      req.session.regenerate(function (err) {
+        if (err) next(err);
+
+        // store user information in session, typically a user id
+        req.session.userId = loginUser.id;
+        req.session.username = loginUser.username;
+
+        // save the session before redirection to ensure page
+        // load does not happen before session is saved
+        req.session.save(function (err) {
+          if (err) return next(err);
+          res.redirect("/");
+        });
+      });
     } catch (error) {
       res.redirect(`/login?errors=${JSON.stringify(error)}`);
+    }
+  }
+
+  // ==================== LOGOUT ====================
+  static async logout(req, res, next) {
+    try {
+      // logout logic
+
+      // clear the user from the session object and save.
+      // this will ensure that re-using the old session id
+      // does not have a logged in user
+      req.session.userId = null;
+      req.session.username = null;
+      req.session.save(function (err) {
+        if (err) next(err);
+
+        // regenerate the session, which is good practice to help
+        // guard against forms of session fixation
+        req.session.regenerate(function (err) {
+          if (err) next(err);
+          res.redirect("/");
+        });
+      });
+    } catch (error) {
+      console.log(error);
+      res.send(error);
     }
   }
 }
