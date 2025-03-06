@@ -1,23 +1,23 @@
+- Login/Register (GET/POST) 
+	-- NPM package bcrypt + express session
+- Profile (GET)
+	-- Edit profile (POST)
+- Diagnostics (GET)
+	-- Riwayat diagnostic download PDF (pdf.js) atau dikirim lewat email (nodemailer)
+- Role user
+	-- Bisa lihat symptoms dan disease (GET)
+	-- Input symptoms dan lihat kemungkinan diseases (GET)
+	-- Confirm + save diagnostic (POST)
+- Role admin
+	-- Bisa lihat disease dan symptom (GET)
+	-- Bisa edit/tambah disease dan symptom (POST) --> add/edit form (GET)
+	-- Bisa lihat history diagnostic user --> bisa pake search(sql where) (GET)|(routing query)
+- Logout 
+	-- express session
 
-npx sequelize-cli model:create --name User --attributes username:string,email:string,role:string,password:string
-npx sequelize-cli model:create --name Disease --attributes name:string,description:text,level:integer
-npx sequelize-cli model:create --name Symptom --attributes name:string
-npx sequelize-cli model:create --name UserProfile --attributes gender:string,UserId:integer
-npx sequelize-cli model:create --name Diagnostic --attributes DiseaseId:integer,UserId:integer
-npx sequelize-cli model:create --name SymptomDiseaseJunction --attributes DiseaseId:integer,SymptomId:integer
-npx sequelize-cli migration:create --name "add dateOfBirth"
 
 
-## ========== MIGRATE =========== ##
 
-urutan migrate
-npx sequelize db:migrate --name 20250304104901-create-user
-npx sequelize db:migrate --name 20250304150055-create-disease
-npx sequelize db:migrate --name 20250304150158-create-symptom
-npx sequelize db:migrate
-
-
-## ========== ROUTER =========== ##
 
 GET "/" - Homepage
 
@@ -35,7 +35,7 @@ GET "/profile/:userId/diagnostics" - Diagnostics per User
 GET "/profile/:userId/diagnostics/:diagnosticId" - Detail diagnostic -> bisa pake nodemailer untuk kirim email atau pdf.js untuk jadiin pdf
 
 GET "/diagnostic" - Lihat dan pilih symptoms
-POST "/diagnostic" - Pilih symptoms -> redirect ke "/diagnostic/disease"
+// POST "/diagnostic" - Pilih symptoms -> redirect ke "/diagnostic/disease"
 GET "/diagnostic/disease" - Lihat dan confirm disease berdasarkan req.body symptoms
 POST "/diagnostic/disease" - Confirm disease -> redirect ke "/profile/:userId/diagnostics"
 

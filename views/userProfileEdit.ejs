@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cupcake">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <%- include('parts/script') %>
+  </head>
+  <body>
+    <%- include('parts/navbar', {session: session}) %>
+    <div class="p-8 w-full max-h-screen">
+      <form
+        action="/profile/<%= profile.userId %>/edit"
+        method="post"
+        class="flex flex-col justify-start items-center w-full"
+      >
+        <h1 class="text-2xl font-bold my-4">Edit</h1>
+
+        <fieldset class="fieldset h-20">
+          <legend class="fieldset-legend">Gender</legend>
+          <input
+            type="input"
+            placeholder="Gender"
+            name="gender"
+            class="min-w-xs input"
+          />
+        </fieldset>
+
+        <fieldset class="fieldset h-20">
+          <legend class="fieldset-legend">Date of Birth</legend>
+          <input
+            type="date"
+            placeholder="Date of Birth"
+            name="dateOfBirth"
+            class="min-w-xs input"
+          />
+        </fieldset>
+
+        <button type="submit" class="btn btn-primary text-primary-content mt-2">
+          Edit
+        </button>
+      </form>
+    </div>
+  </body>
+</html>
