@@ -30,19 +30,21 @@ router.get("/profile/:userId", Controller.showUserProfile);
 router.get("/profile/:userId/edit", Controller.showEditProfile);
 router.post("/profile/:userId/edit", Controller.postEditProfile);
 
-router.get("/profile/:userId/diagnostics");
-router.get("/profile/:userId/diagnostics/:diagnosticId");
+router.get("/profile/:userId/diagnostics/:diagnosticId", Controller.getDiagnosticDetail);
+router.get("/profile/:userId/diagnostics/:diagnosticId/download", Controller.getDiagnosticPdf);
+router.get("/profile/:userId/diagnostics/:diagnosticId/email", Controller.sendDiagnosticEmail)
+router.get('/diagnostic/user/:userId', Controller.getUserDiagnostics);
 
 router.get("/diagnostic", Controller.showDiagnostic);
 router.post("/diagnostic", Controller.postDiagnostic)
-router.get("/diagnostic/disease");
-router.post("/diagnostic/disease");
+router.get("/diagnostic/disease", Controller.getDisease);
+router.post("/diagnostic/disease", Controller.postDisease);
 
-router.use(function(req, res, next) {
-  if(req.session.role !== 'admin')
-    res.redirect(`/?errors="userNotAdmin"`);
-  else next();
-});
+// router.use(function(req, res, next) {
+//   if(req.session.role !== 'admin')
+//     res.redirect(`/?errors="userNotAdmin"`);
+//   else next();
+// });
 
 router.get("/manage/diagnostics");
 

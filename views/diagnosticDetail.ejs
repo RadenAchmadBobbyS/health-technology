@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Diagnosis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <%- include('parts/navbar', { session: session }) %>
+
+    <div class="container mx-auto max-w-4xl p-6 bg-white shadow-md rounded-xl mt-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Detail Diagnosis</h2>
+
+        <div class="p-4 border rounded-lg shadow-sm bg-gray-50">
+            <h3 class="text-lg font-semibold text-gray-700"><%= diagnostic.Disease.name %></h3>
+            <p class="text-sm text-gray-500">Diagnosa pada: <%= diagnostic.createdAt.toLocaleString("id-ID") %></p>
+            <p class="mt-2"><strong>Analisis:</strong> Diagnosis berdasarkan gejala yang dipilih.</p>
+
+            <!-- Kondisi berdasarkan jenis penyakit -->
+            <% if (diagnostic.Disease.name === "Diabetes") { %>
+                <div class="mt-2 p-3 bg-red-100 border-l-4 border-red-500 text-red-700">
+                    <strong>⚠️ Diabetes Terdiagnosis</strong>
+                    <p>Jaga pola makan, hindari konsumsi gula berlebih, dan lakukan cek gula darah rutin.</p>
+                </div>
+                <p class="mt-2"><strong>Rekomendasi:</strong> Konsultasikan ke dokter spesialis endokrin.</p>
+
+            <% } else if (diagnostic.Disease.name === "Hipertensi") { %>
+                <div class="mt-2 p-3 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+                    <strong>⚠️ Hipertensi Terdiagnosis</strong>
+                    <p>Kurangi konsumsi garam, hindari stres, dan lakukan pemeriksaan tekanan darah secara rutin.</p>
+                </div>
+                <p class="mt-2"><strong>Rekomendasi:</strong> Periksakan diri ke dokter spesialis jantung.</p>
+
+            <% } else if (diagnostic.Disease.name === "COVID-19") { %>
+                <div class="mt-2 p-3 bg-blue-100 border-l-4 border-blue-500 text-blue-700">
+                    <strong>⚠️ Positif COVID-19</strong>
+                    <p>Isolasi mandiri, konsumsi vitamin, dan segera hubungi tenaga medis jika kondisi memburuk.</p>
+                </div>
+                <p class="mt-2"><strong>Rekomendasi:</strong> Hubungi fasilitas kesehatan terdekat untuk penanganan lebih lanjut.</p>
+
+            <% } else if (diagnostic.Disease.name === "Flu") { %>
+                <div class="mt-2 p-3 bg-green-100 border-l-4 border-green-500 text-green-700">
+                    <strong>🤧 Flu Terdiagnosis</strong>
+                    <p>Istirahat yang cukup, konsumsi banyak cairan, dan minum obat pereda gejala jika diperlukan.</p>
+                </div>
+                <p class="mt-2"><strong>Rekomendasi:</strong> Jika gejala memburuk, periksa ke dokter.</p>
+
+            <% } else { %>
+                <div class="mt-2 p-3 bg-gray-100 border-l-4 border-gray-500 text-gray-700">
+                    <strong>ℹ️ Informasi Penyakit</strong>
+                    <p>Silakan konsultasikan lebih lanjut dengan dokter untuk pemeriksaan lebih mendalam.</p>
+                </div>
+            <% } %>
+
+            <div class="mt-4 flex space-x-4">
+                <a href="/profile/<%= diagnostic.UserId %>/diagnostics/<%= diagnostic.id %>/download"
+                   class="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition">
+                   Download PDF
+                </a>
+                <a href="/profile/<%= diagnostic.UserId %>/diagnostics/<%= diagnostic.id %>/email"
+                   class="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition">
+                   Kirim Email
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <a href="/diagnostic/user/<%= diagnostic.UserId %>"
+               class="px-4 py-2 bg-gray-500 text-white rounded-lg shadow-md hover:bg-gray-600 transition">
+               Kembali ke Riwayat
+            </a>
+        </div>
+    </div>
+
+    <%- include('parts/script') %>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <%- include('parts/navbar', {session: session}) %>
+    
+    <div class="flex justify-center">
+        <ul class="list bg-base-100 rounded-box shadow-md">
+            <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Confrim Symptom</li>
+            <div class="container mx-auto max-w-6xl p-6 bg-white shadow-md rounded-xl">
+                <% if (diseases.length > 0) { %>
+                    <form action="/diagnostic/disease" method="post" class="space-y-4">
+                        <% diseases.forEach(disease => { %>
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" name="diseaseId" value="<%= disease.id %>" required class="h-4 w-4">
+                                <span class="text-lg"><strong><%= disease.name %></strong> - <%= disease.description %></span>
+                            </label>
+                        <% }); %>
+        
+                        <div class="mt-4 flex space-x-4">
+                            <button type="submit" class="btn btn-secondary">Konfirmasi</button>
+                            <a href="/diagnostic" class="btn btn-neutral">Kembali</a>
+                        </div>
+                    </form>
+                <% } else { %>
+                    <p class="text-center text-lg text-red-500">Tidak ada penyakit yang cocok dengan gejala yang dipilih.</p>
+                    <a href="/diagnostic" class="btn btn-neutral">Kembali</a>
+                <% } %>
+            </div>
+    </div>
+
+    <%- include('parts/script') %>
+</body>
+</html>

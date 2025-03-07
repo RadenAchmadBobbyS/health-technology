@@ -1,5 +1,7 @@
+const { where } = require("sequelize");
 const { User, UserProfile, Symptom, Disease, SymptomDiseaseJunction, Diagnostic } = require("../models");
 const bcrypt = require("bcrypt");
+const PDFDocument = require("pdfkit");
 
 class Controller {
   // ==================== HOME PAGE ====================
@@ -215,11 +217,8 @@ class Controller {
 
   static async showDiagnostic(req, res) {
     try {
-      let data = await Symptom.findAll();
-      res.render("addDiagnostic", { 
-        data: data, 
-        session: req.session
-      });
+      let symptoms = await Symptom.findAll();
+      res.render("selectSymptoms", { symptoms, session: req.session });
     } catch (error) {
       res.send(error);
     }
@@ -227,45 +226,170 @@ class Controller {
 
   static async postDiagnostic(req, res) {
     try {
-      console.log(req.body);
-      await Symptom.create(req.body);
-      res.redirect("/diagnostic");
+      req.session.selectedSymptoms = req.body.symptoms
+      res.redirect(`/diagnostic/disease`)
     } catch (error) {
+      console.log(error)
       res.send(error);
     }
   }
 
-  static async showDiagnosticDisease(req, res) {
+  static async getDisease(req, res) {
     try {
+      if (!req.session.userId) throw "Invalid user login";
+
+      const profile = await UserProfile.findOne({
+        where: {
+          UserId: +req.session.userId
+        }
+      });
+
+      let selectedSymptoms = req.session.selectedSymptoms
+
+      let diseases = await Disease.findAll({where: { id: selectedSymptoms }})
+
+      console.log("Found Diseases:", diseases.map(d => d.name));
+
+      res.render("confrimDisease", { diseases, profile, session: req.session })
     } catch (error) {
+      console.log(error)
       res.send(error);
     }
   }
 
-  // ================== LIST DIAGNOSTICS ==================
-  // static async showDiagnosticsList(req, res) {
-  //   try {
-  //     let diagnosticsList;
-  //     if(req.params.userId)
-  //       diagnosticsList = await Diagnostic.findAll({
-  //         include: [User, Disease],
-  //         where: {
-  //           UserId: +req.params.userId
-  //         }
-  //       });
-  //     else 
-  //       diagnosticsList = await Diagnostic.findAll({
-  //         include: [User, Disease]
-  //       });
-  //     console.log(diagnosticsList);
+  static async postDisease(req, res) {
+    try {
+      if (!req.session.userId) throw "Invalid user login";
 
-  //     res.render('diagnosticsList', {session: req.session});
-  //   } catch (error) {
-  //     console.log(error);
-  //     res.send(error);
-  //   }
-  // }
+    const profile = await UserProfile.findOne({
+      where: {
+        UserId: +req.session.userId
+      }
+    });
 
+      let { diseaseId } = req.body
+      console.log(`selected id: `, diseaseId)
+
+      await Diagnostic.create({
+      UserId: profile.UserId,
+      DiseaseId: diseaseId
+      })
+      res.redirect(`/diagnostic/user/${profile.UserId}`)
+    } catch (error) {
+      console.log(error)
+      res.send(error)
+    }
+  }
+
+  static async getUserDiagnostics(req, res) {
+    try {
+      let { userId } = req.params
+      let diagnostics = await Diagnostic.findAll({
+      where: { UserId: userId },
+      include: [
+        {
+          model: Disease,
+          required: true
+        }
+      ]
+      })
+      res.render("diagnostics", { diagnostics, userId, session: req.session })
+    } catch (error) {
+      console.log(error)
+      res.send(error)
+    }
+  }
+
+  static async getDiagnosticDetail(req, res) {
+    try {
+      let { userId, diagnosticId } = req.params;
+
+      let diagnostic = await Diagnostic.findOne({
+        where: { id: diagnosticId, UserId: userId },
+        include: [{ model: Disease }]
+      });
+      console.log(diagnostic)
+      res.render("diagnosticDetail", { diagnostic, session: req.session });
+    } catch (error) {
+      res.rend(error)
+    }
+  }
+  static async sendDiagnosticEmail(req, res) {
+    try {
+      let { userId, diagnosticId } = req.params;
+
+      // Ambil data diagnosa
+      const diagnostic = await Diagnostic.findOne({
+        where: { id: diagnosticId, UserId: userId },
+        include: [{ model: Disease }, { model: User }]
+      });
+
+      if (!diagnostic) {
+        return res.status(404).send("Diagnosis tidak ditemukan.");
+      }
+
+      // Konfigurasi transporter Nodemailer
+      let transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "your-email@gmail.com", // Ganti dengan email Anda
+          pass: "your-email-password"  // Gunakan app password jika pakai Gmail
+        }
+      });
+
+      // Isi email
+      let mailOptions = {
+        from: "your-email@gmail.com",
+        to: diagnostic.User.email, // Kirim ke email user
+        subject: "Hasil Diagnosis Anda",
+        html: `
+          <h3>Hasil Diagnosis</h3>
+          <p><strong>Penyakit:</strong> ${diagnostic.Disease.name}</p>
+          <p><strong>Analisis:</strong> Diagnosis berdasarkan gejala yang dipilih.</p>
+          <p><strong>Rekomendasi:</strong> Silakan konsultasikan ke dokter untuk pemeriksaan lebih lanjut.</p>
+          <p>Terima kasih.</p>
+        `
+      };
+
+      // Kirim email
+      await transporter.sendMail(mailOptions);
+
+      // Redirect kembali dengan pesan sukses
+      res.redirect(`/profile/${userId}/diagnostics?emailSent=success`);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Gagal mengirim email.");
+    }
+  }
+  
+  static async getDiagnosticPdf(req, res) {
+    try {
+      let { userId, diagnosticId } = req.params;
+
+      let diagnostic = await Diagnostic.findOne({
+        where: { id: diagnosticId, UserId: userId },
+        include: [{ model: Disease }]
+      });
+
+      const doc = new PDFDocument();
+      res.setHeader("Content-Disposition", `attachment; filename="diagnostic_${diagnosticId}.pdf"`);
+      res.setHeader("Content-Type", "application/pdf");
+
+      doc.pipe(res);
+
+      doc.fontSize(20).text("Detail Diagnosis", { align: "center" });
+      doc.moveDown();
+      doc.fontSize(16).text(`Penyakit: ${diagnostic.Disease.name}`);
+      doc.text(`Tanggal Diagnosis: ${diagnostic.createdAt.toDateString()}`);
+      doc.moveDown();
+      doc.text("Analisis: Diagnosis berdasarkan gejala yang dipilih.");
+      doc.text("Rekomendasi: Konsultasikan dengan dokter untuk pemeriksaan lebih lanjut.");
+      doc.end();
+    } catch (error) {
+      console.log(error)
+      res.send(error)
+    }
+  }
   // ================== MANAGE DISEASES ==================
   static async showManageDiseases(req, res) {
     try {
