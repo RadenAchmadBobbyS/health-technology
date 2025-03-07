@@ -1,4 +1,4 @@
-const { where } = require("sequelize");
+const { Op } = require("sequelize");
 const { User, UserProfile, Symptom, Disease, SymptomDiseaseJunction, Diagnostic } = require("../models");
 const bcrypt = require("bcrypt");
 const PDFDocument = require("pdfkit");
@@ -293,7 +293,50 @@ class Controller {
         }
       ]
       })
-      res.render("diagnostics", { diagnostics, userId, session: req.session })
+
+      const manageAdmin = false;
+      res.render("diagnostics", { diagnostics, userId, session: req.session, manageAdmin })
+    } catch (error) {
+      console.log(error)
+      res.send(error)
+    }
+  }
+
+  static async getDiagnostics(req, res) {
+    try {
+      // let { userId } = req.params
+      let diagnostics;
+
+      if(req.query.search) 
+        diagnostics = await Diagnostic.findAll({
+          include: [
+            {
+              model: Disease,
+              required: true
+            },
+            {
+              model: User,
+              where: {
+                username: {
+                  [Op.iLike]: `%${req.query.search}%`
+                }
+              }
+            }
+          ]
+        });
+      else
+        diagnostics = await Diagnostic.findAll({
+        include: [
+          {
+            model: Disease,
+            required: true
+          },
+          User
+        ]
+        });
+      
+      const manageAdmin = true;
+      res.render("diagnostics", { diagnostics, session: req.session, manageAdmin })
     } catch (error) {
       console.log(error)
       res.send(error)
