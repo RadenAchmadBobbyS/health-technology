@@ -40,13 +40,13 @@ router.post("/diagnostic", Controller.postDiagnostic)
 router.get("/diagnostic/disease", Controller.getDisease);
 router.post("/diagnostic/disease", Controller.postDisease);
 
-// router.use(function(req, res, next) {
-//   if(req.session.role !== 'admin')
-//     res.redirect(`/?errors="userNotAdmin"`);
-//   else next();
-// });
+router.use(function(req, res, next) {
+  if(req.session.role !== 'admin')
+    res.redirect(`/?errors="userNotAdmin"`);
+  else next();
+});
 
-router.get("/manage/diagnostics");
+router.get("/manage/diagnostics", Controller.getDiagnostics);
 
 router.get("/manage/diseases", Controller.showManageDiseases);
 
