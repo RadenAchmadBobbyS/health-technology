@@ -14,6 +14,7 @@
     <div class="container mx-auto max-w-6xl p-6 bg-white shadow-lg rounded-xl mt-10">
         <h2 class="text-3xl font-bold text-gray-800 mb-6">Daftar Diagnosa</h2>
 
+        <% if (manageAdmin) { %>
         <form action="" method="get">
             <label class="input w-full my-4">
                 <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
@@ -24,6 +25,7 @@
                 </button>
             </label>
         </form>
+        <% } %>
 
         <% if (diagnostics.length > 0) { %>
             <div class="overflow-x-auto">
